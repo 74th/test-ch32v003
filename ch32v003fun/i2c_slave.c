@@ -21,7 +21,7 @@ void I2C1_EV_IRQHandler(void)
 
     I2C1->CTLR1 |= I2C_CTLR1_ACK;
 
-    if (STAR1 & I2C_STAR1_ADDR)
+    if (STAR1 & I2C_STAR1_ADDR) // 0x0002
     {
         printf("ADDR\r\n");
         // 最初のイベント
@@ -49,6 +49,11 @@ void I2C1_EV_IRQHandler(void)
                 // 1byte 受信
                 i2c_slave_state.registers[i2c_slave_state.position] = I2C1->DATAR;
                 i2c_slave_state.position++;
+            }
+            else
+            {
+                // 必ず読み込まないと TIMEOUT してしまう
+                I2C1->DATAR;
             }
         }
     }
