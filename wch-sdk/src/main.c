@@ -22,7 +22,8 @@ void IIC_Init(u32 bound, u16 address)
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     I2C_InitTypeDef I2C_InitTSturcture = {0};
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
+    // RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
@@ -54,8 +55,13 @@ void IIC_Init(u32 bound, u16 address)
 
     I2C_ITConfig(I2C1, I2C_IT_BUF, ENABLE);
 
+    // I2C1->CTLR1 |= I2C_CTLR1_PE;
     I2C_Cmd(I2C1, ENABLE);
-    I2C_CalculatePEC(I2C1, ENABLE);
+
+    // I2C1->CTLR1 |= I2C_CTLR1_ACK;
+    I2C_AcknowledgeConfig(I2C1, ENABLE);
+
+    // I2C_CalculatePEC(I2C1, ENABLE);
 }
 
 /*********************************************************************
