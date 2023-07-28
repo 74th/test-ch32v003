@@ -17,70 +17,78 @@ void I2C1_EV_IRQHandler(void)
     STAR1 = I2C1->STAR1;
     STAR2 = I2C1->STAR2;
 
-    printf("EV STAR1: %x STAR2: %x\r\n", STAR1, STAR2);
+    printf("EV STAR1: 0x%04x STAR2: 0x%04x\r\n", STAR1, STAR2);
 
     I2C1->CTLR1 |= I2C_CTLR1_ACK;
 
     if (STAR1 & I2C_STAR1_ADDR)
     {
         printf("ADDR\r\n");
-        // Start event
-        i2c_slave_state.first_write = 1;                   // Next write will be the offset
-        i2c_slave_state.position = i2c_slave_state.offset; // Reset position
+        // 最初のイベント
+        // read でも write でも必ず最初に呼ばれる
+        i2c_slave_state.first_write = 1;
+        i2c_slave_state.position = i2c_slave_state.offset;
     }
 
-    if (STAR1 & I2C_STAR1_RXNE)
+    if (STAR1 & I2C_STAR1_RXNE) // 0x0040
     {
         printf("RXNE write event: pos:%d\r\n", i2c_slave_state.position);
-        // Write event
+        // 1byte の write イベント（master -> slave）
         if (i2c_slave_state.first_write)
-        { // First byte written, set the offset
+        {
+            // 1byte 受信
+            // オフセットとして設定
             i2c_slave_state.offset = I2C1->DATAR;
             i2c_slave_state.position = i2c_slave_state.offset;
             i2c_slave_state.first_write = 0;
         }
         else
-        { // Normal register write
+        {
             if (i2c_slave_state.position < i2c_slave_state.size)
             {
+                // 1byte 受信
                 i2c_slave_state.registers[i2c_slave_state.position] = I2C1->DATAR;
                 i2c_slave_state.position++;
             }
         }
     }
 
-    if (STAR1 & I2C_STAR1_TXE)
-    { // Read event
+    if (STAR1 & I2C_STAR1_TXE) // 0x0080
+    {
+        // 1byte の read イベント（slave -> master）
         printf("TXE write event: pos:%d\r\n", i2c_slave_state.position);
         if (i2c_slave_state.position < i2c_slave_state.size)
         {
+            // 1byte 送信
             I2C1->DATAR = i2c_slave_state.registers[i2c_slave_state.position];
             i2c_slave_state.position++;
         }
         else
         {
+            // 1byte 送信
             I2C1->DATAR = 0x00;
         }
     }
+    //
 }
 
 void I2C1_ER_IRQHandler(void)
 {
-    printf("ER\r\n");
-
     uint16_t STAR1 = I2C1->STAR1;
 
-    if (STAR1 & I2C_STAR1_BERR)
+    printf("ER STAR1: 0x%04x\r\n", STAR1);
+
+    if (STAR1 & I2C_STAR1_BERR)           // 0x0100
     {                                     // Bus error
         I2C1->STAR1 &= ~(I2C_STAR1_BERR); // Clear error
     }
 
-    if (STAR1 & I2C_STAR1_ARLO)
+    if (STAR1 & I2C_STAR1_ARLO)           // 0x0200
     {                                     // Arbitration lost error
         I2C1->STAR1 &= ~(I2C_STAR1_ARLO); // Clear error
     }
 
-    if (STAR1 & I2C_STAR1_AF)
+    if (STAR1 & I2C_STAR1_AF)           // 0x0400
     {                                   // Acknowledge failure
         I2C1->STAR1 &= ~(I2C_STAR1_AF); // Clear error
     }
