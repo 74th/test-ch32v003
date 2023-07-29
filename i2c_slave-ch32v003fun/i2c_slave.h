@@ -89,6 +89,11 @@ void SetupI2CSlave(uint8_t address, volatile uint8_t *registers, uint8_t size)
     // Set I2C address
     I2C1->OADDR1 = address << 1;
 
+    printf("I2C1->CTLR1: 0x%04x\r\n", I2C1->CTLR1);
+    printf("I2C1->CTLR2: 0x%04x\r\n", I2C1->CTLR2);
+    printf("I2C1->CKCFGR: 0x%04x\r\n", I2C1->CKCFGR);
+    printf("I2C1->DADDR1: 0x%04x\r\n", I2C1->OADDR1);
+
     // Enable I2C
     I2C1->CTLR1 |= I2C_CTLR1_PE;
 

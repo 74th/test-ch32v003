@@ -103,6 +103,8 @@ int main()
 {
     SystemInit();
 
+    printf("using ch32v003fun\r\n");
+
     printf("initialize\r\n");
 
     SetupI2CSlave(0x9, i2c_registers, sizeof(i2c_registers));
