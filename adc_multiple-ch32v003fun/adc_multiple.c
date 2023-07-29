@@ -35,7 +35,7 @@ void adc_init(void)
     RCC->APB2PRSTR |= RCC_APB2Periph_ADC1;
     RCC->APB2PRSTR &= ~RCC_APB2Periph_ADC1;
 
-    // Set up four conversions on chl 7, 4, 3, 2
+    // Set up four conversions on chl 0, 1, 2
     ADC1->RSQR1 = (ADC_NUMCHLS - 1) << 20; // four chls in the sequence
     ADC1->RSQR2 = 0;
     ADC1->RSQR3 = (0 << (5 * 0)) | (1 << (5 * 1)) | (2 << (5 * 2));
@@ -86,50 +86,18 @@ void adc_init(void)
     ADC1->CTLR2 |= ADC_SWSTART;
 }
 
-/*
- * turn on op-amp, select input pins
- */
-void opamp_init(void)
-{
-    // turn on the op-amp
-    EXTEN->EXTEN_CTR |= EXTEN_OPA_EN;
-
-    // select op-amp pos pin: 0 = PA2, 1 = PD7
-    // EXTEN->EXTEN_CTR |= EXTEN_OPA_PSEL;
-
-    // select op-amp neg pin: 0 = PA1, 1 = PD0
-    // EXTEN->EXTEN_CTR |= EXTEN_OPA_NSEL;
-}
-
-/*
- * entry
- */
 int main()
 {
     SystemInit();
 
-    // start serial @ default 115200bps
+    printf("\r\r\n\nusing ch32v003\n\r");
     Delay_Ms(100);
-    printf("\r\r\n\nadc_dma_opamp example\n\r");
 
-    // init adc
-    printf("initializing adc...");
+    printf("initialize\r\n");
     adc_init();
-    printf("done.\n\r");
+    printf("done\n\r");
 
-    // init op-amp
-    printf("initializing op-amp...\n\r");
-    opamp_init();
-    printf("done.\n\r");
-
-    // Enable GPIO for blinky diag
-    RCC->APB2PCENR |= RCC_APB2Periph_GPIOC;
-
-    // GPIO C1 Push-Pull for blinky diag
-    GPIOC->CFGLR &= ~(0xf << (4 * 1));
-    GPIOC->CFGLR |= (GPIO_Speed_10MHz | GPIO_CNF_OUT_PP) << (4 * 1);
-
-    printf("looping...\n\r");
+    printf("start\n\r");
     while (1)
     {
         GPIOC->BSHR = 1 << 1; // Turn on GPIOs
