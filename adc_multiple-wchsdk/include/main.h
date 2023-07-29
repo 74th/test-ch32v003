@@ -1,0 +1,1 @@
+void handle_i2c(void);
