@@ -7,7 +7,7 @@
 #include "ch32v003fun.h"
 #include <stdio.h>
 
-#define ADC_NUMCHLS 4
+#define ADC_NUMCHLS 3
 volatile uint16_t adc_buffer[ADC_NUMCHLS];
 
 /*
@@ -19,19 +19,16 @@ void adc_init(void)
     RCC->CFGR0 &= ~(0x1F << 11);
 
     // Enable GPIOD and ADC
-    RCC->APB2PCENR |= RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |
+    RCC->APB2PCENR |= RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |
                       RCC_APB2Periph_ADC1;
 
-    // PD4 is analog input chl 7
-    GPIOD->CFGLR &= ~(0xf << (4 * 4)); // CNF = 00: Analog, MODE = 00: Input
+    // A0 PA2
+    GPIOA->CFGLR &= ~(0xf << (4 * 2)); // CNF = 00: Analog, MODE = 00: Input
 
-    // PD3 is analog input chl 4
-    GPIOD->CFGLR &= ~(0xf << (4 * 3)); // CNF = 00: Analog, MODE = 00: Input
+    // A1 PA1
+    GPIOA->CFGLR &= ~(0xf << (4 * 2)); // CNF = 00: Analog, MODE = 00: Input
 
-    // PD2 is analog input chl 3
-    GPIOD->CFGLR &= ~(0xf << (4 * 2)); // CNF = 00: Analog, MODE = 00: Input
-
-    // PC4 is analog input chl 2
+    // A2 PA4
     GPIOC->CFGLR &= ~(0xf << (4 * 4)); // CNF = 00: Analog, MODE = 00: Input
 
     // Reset the ADC to init all regs
@@ -41,11 +38,11 @@ void adc_init(void)
     // Set up four conversions on chl 7, 4, 3, 2
     ADC1->RSQR1 = (ADC_NUMCHLS - 1) << 20; // four chls in the sequence
     ADC1->RSQR2 = 0;
-    ADC1->RSQR3 = (7 << (5 * 0)) | (4 << (5 * 1)) | (3 << (5 * 2)) | (2 << (5 * 3));
+    ADC1->RSQR3 = (0 << (5 * 0)) | (1 << (5 * 1)) | (2 << (5 * 2));
 
     // set sampling time for chl 7, 4, 3, 2
     // 0:7 => 3/9/15/30/43/57/73/241 cycles
-    ADC1->SAMPTR2 = (7 << (3 * 7)) | (7 << (3 * 4)) | (7 << (3 * 3)) | (7 << (3 * 2));
+    ADC1->SAMPTR2 = (7 << (3 * 0)) | (7 << (3 * 1)) | (7 << (3 * 2));
 
     // turn on ADC
     ADC1->CTLR2 |= ADC_ADON;
@@ -139,7 +136,6 @@ int main()
         Delay_Ms(100);
         GPIOC->BSHR = 1 << (1 + 16); // Turn off GPIODs
         Delay_Ms(100);
-        printf("%4d %4d ", adc_buffer[0], adc_buffer[1]);
-        printf("%4d %4d\n\r", adc_buffer[2], adc_buffer[3]);
+        printf("%4d %4d %4d\n\r", adc_buffer[0], adc_buffer[1], adc_buffer[2]);
     }
 }
