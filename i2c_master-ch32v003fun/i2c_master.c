@@ -311,5 +311,7 @@ int main()
         i2c_receive(0x74, buf, 1);
         printf("received: 0x%02x\r\n", buf[0]);
         Delay_Ms(LOOP_MS);
+        i2c_send(0x74, buf, 3 * 4);
+        Delay_Ms(LOOP_MS);
     }
 }
