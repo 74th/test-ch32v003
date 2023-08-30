@@ -29,7 +29,7 @@ void init_rcc(void)
  * https://github.com/cnlohr/ch32v003fun/blob/ee60fd756aa015be799e430d230a8f33266421de/examples/i2c_oled/i2c.h#L321
  * https://github.com/cnlohr/ch32v003fun/blob/ee60fd756aa015be799e430d230a8f33266421de/examples/i2c_oled/i2c.h#L40
  */
-void init_i2c_master(uint8_t address)
+void init_i2c_master()
 {
 
     // PC1 is SDA, 10MHz Output, alt func, open-drain
@@ -108,6 +108,7 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for not BUSY is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -121,6 +122,7 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for master select is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -134,6 +136,7 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for transmit condition is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -148,6 +151,7 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
         if (timeout == -1)
         {
             printf("i2c error: waiting for data send is timeout\r\n");
+            I2C1->CTLR1 |= I2C_CTLR1_STOP;
             return -1;
         }
 
@@ -162,6 +166,7 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for tx complete is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -185,6 +190,7 @@ int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for not BUSY is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -198,6 +204,7 @@ int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for master select is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -211,6 +218,7 @@ int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
     if (timeout == -1)
     {
         printf("i2c error: waiting for transmit condition is timeout %04x, %04x\r\n", I2C1->STAR1, I2C1->STAR2);
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
         return -1;
     }
 
@@ -229,6 +237,7 @@ int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
         if (timeout == -1)
         {
             printf("i2c error: receiving for data send is timeout\r\n");
+            I2C1->CTLR1 |= I2C_CTLR1_STOP;
             return -1;
         }
 
