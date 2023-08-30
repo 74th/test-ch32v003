@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define I2C_SLAVE_ADDRESS 0x74
-#define LOOP_MS 10
+#define LOOP_MS 1000
 // #define LED_PIN GPIOv_from_PORT_PIN(GPIO_port_C, 3)
 #define LED_PIN GPIOv_from_PORT_PIN(GPIO_port_D, 4)
 #define SELECT_U1_PIN GPIOv_from_PORT_PIN(GPIO_port_A, 1)
@@ -77,6 +77,8 @@ void init_i2c_master(uint8_t address)
 #define I2C_EVENT_MASTER_MODE_SELECT ((uint32_t)0x00030001)               /* BUSY, MSL and SB flag */
 #define I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED ((uint32_t)0x00070082) /* BUSY, MSL, ADDR, TXE and TRA flags */
 #define I2C_EVENT_MASTER_BYTE_TRANSMITTED ((uint32_t)0x00070084)          /* TRA, BUSY, MSL, TXE and BTF flags */
+#define I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED ((uint32_t)0x00030002)    /* BUSY, SB, ADDR flags */
+#define I2C_EVENT_MASTER_BYTE_RECEIVED ((uint32_t)0x00030040)             /* TRA, SB, ADDR flags */
 
 /*
  * check for 32-bit event codes
@@ -96,6 +98,8 @@ uint8_t i2c_chk_evt(uint32_t event_mask)
 uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
 {
     int32_t timeout;
+
+    I2C1->CTLR1 |= I2C_CTLR1_ACK;
 
     // wait for not busy
     timeout = TIMEOUT_MAX;
@@ -168,6 +172,89 @@ uint8_t i2c_send(uint8_t addr, uint8_t *data, uint8_t sz)
     return 0;
 }
 
+int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
+{
+    int32_t timeout;
+
+    I2C1->CTLR1 |= I2C_CTLR1_ACK;
+
+    // wait for not busy
+    timeout = TIMEOUT_MAX;
+    while ((I2C1->STAR2 & I2C_STAR2_BUSY) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for not BUSY is timeout\r\n");
+        return -1;
+    }
+
+    // Set START condition
+    I2C1->CTLR1 |= I2C_CTLR1_START;
+
+    // wait for master mode select
+    timeout = TIMEOUT_MAX;
+    while ((!i2c_chk_evt(I2C_EVENT_MASTER_MODE_SELECT)) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for master select is timeout\r\n");
+        return -1;
+    }
+
+    // send 7-bit address + receive flag
+    I2C1->DATAR = addr << 1 | 0x1;
+
+    // wait for transmit condition
+    timeout = TIMEOUT_MAX;
+    while ((!i2c_chk_evt(I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for transmit condition is timeout %04x, %04x\r\n", I2C1->STAR1, I2C1->STAR2);
+        return -1;
+    }
+
+    // send data one byte at a time
+    while (sz--)
+    {
+        if (sz == 0)
+        {
+            printf("i2c receive last byte\r\n");
+            I2C1->CTLR1 &= ~I2C_CTLR1_ACK;
+        }
+        // wait for TX Empty
+        timeout = TIMEOUT_MAX;
+        while (!(I2C1->STAR1 & I2C_STAR1_RXNE) && (timeout--))
+            ;
+        if (timeout == -1)
+        {
+            printf("i2c error: receiving for data send is timeout\r\n");
+            return -1;
+        }
+
+        // receive command
+        *buf = I2C1->DATAR;
+        printf("i2c receive: [%2d] 0x%02x\r\n", sz, *buf);
+        buf++;
+    }
+
+    // set STOP condition
+    I2C1->CTLR1 |= I2C_CTLR1_STOP;
+
+    // // wait for tx complete
+    // timeout = TIMEOUT_MAX;
+    // while ((!i2c_chk_evt(I2C_EVENT_MASTER_BYTE_RECEIVED)) && (timeout--))
+    //     ;
+    // if (timeout == -1)
+    // {
+    //     printf("i2c error: waiting for rx complete is timeout\r\n");
+    //     return -1;
+    // }
+
+    // we're happy
+    return 0;
+}
+
 int main()
 {
     SystemInit();
@@ -196,10 +283,33 @@ int main()
 
     printf("test i2c\r\n");
     i2c_send(0x74, buf, 3 * 4);
+
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
+    Delay_Ms(LOOP_MS);
+    i2c_receive(0x74, buf, 4);
+    printf("received: 0x%02x\r\n", buf[0]);
     printf("test i2c done\r\n");
 
     while (1)
     {
+        i2c_receive(0x74, buf, 1);
+        printf("received: 0x%02x\r\n", buf[0]);
         Delay_Ms(LOOP_MS);
     }
 }
