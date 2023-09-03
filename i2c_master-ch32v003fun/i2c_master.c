@@ -264,6 +264,56 @@ int i2c_receive(uint8_t addr, uint8_t *buf, uint8_t sz)
     return 0;
 }
 
+int i2c_slave_available(uint8_t addr)
+{
+    int32_t timeout;
+
+    I2C1->CTLR1 |= I2C_CTLR1_ACK;
+
+    // wait for not busy
+    timeout = TIMEOUT_MAX;
+    while ((I2C1->STAR2 & I2C_STAR2_BUSY) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for not BUSY is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
+        return 0;
+    }
+
+    // Set START condition
+    I2C1->CTLR1 |= I2C_CTLR1_START;
+
+    // wait for master mode select
+    timeout = TIMEOUT_MAX;
+    while ((!i2c_chk_evt(I2C_EVENT_MASTER_MODE_SELECT)) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for master select is timeout\r\n");
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
+        return 0;
+    }
+
+    // send 7-bit address + receive flag
+    I2C1->DATAR = addr << 1 | 0x1;
+
+    // wait for transmit condition
+    timeout = TIMEOUT_MAX;
+    while ((!i2c_chk_evt(I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)) && (timeout--))
+        ;
+    if (timeout == -1)
+    {
+        printf("i2c error: waiting for transmit condition is timeout %04x, %04x\r\n", I2C1->STAR1, I2C1->STAR2);
+        I2C1->CTLR1 |= I2C_CTLR1_STOP;
+        return 0;
+    }
+
+    I2C1->CTLR1 |= I2C_CTLR1_STOP;
+
+    return 1;
+}
+
 int main()
 {
     SystemInit();
@@ -293,34 +343,19 @@ int main()
     printf("test i2c\r\n");
     i2c_send(0x74, buf, 3 * 4);
 
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
-    Delay_Ms(LOOP_MS);
-    i2c_receive(0x74, buf, 4);
-    printf("received: 0x%02x\r\n", buf[0]);
     printf("test i2c done\r\n");
 
     while (1)
     {
-        i2c_receive(0x74, buf, 1);
-        printf("received: 0x%02x\r\n", buf[0]);
-        Delay_Ms(LOOP_MS);
-        i2c_send(0x74, buf, 3 * 4);
+        int available = i2c_slave_available(0x74);
+        printf("alive: %d\r\n", available);
+        if (available)
+        {
+            i2c_receive(0x74, buf, 1);
+            printf("received: 0x%02x\r\n", buf[0]);
+            Delay_Ms(LOOP_MS);
+            i2c_send(0x74, buf, 3 * 4);
+        }
         Delay_Ms(LOOP_MS);
     }
 }
