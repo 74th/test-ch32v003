@@ -152,6 +152,26 @@ void input_gpio(uint16_t *gp_pin, uint8_t iodir, uint8_t *gpio)
 
 void onWrite(uint8_t reg, uint8_t length)
 {
+	for (uint8_t p = reg; p < reg + length; p++)
+	{
+		switch (p)
+		{
+		case MCP23017_IODIR_A:
+		case MCP23017_GPPU_A:
+			set_iodir(gpa_pin, i2c_registers[MCP23017_IODIR_A], i2c_registers[MCP23017_GPPU_A], i2c_registers[MCP23017_GPIO_A]);
+			break;
+		case MCP23017_IODIR_B:
+		case MCP23017_GPPU_B:
+			set_iodir(gpb_pin, i2c_registers[MCP23017_IODIR_B], i2c_registers[MCP23017_GPPU_B], i2c_registers[MCP23017_GPIO_B]);
+			break;
+		case MCP23017_GPIO_A:
+			output_gpio(gpa_pin, i2c_registers[MCP23017_IODIR_A], i2c_registers[MCP23017_GPIO_A]);
+			break;
+		case MCP23017_GPIO_B:
+			output_gpio(gpb_pin, i2c_registers[MCP23017_IODIR_B], i2c_registers[MCP23017_GPIO_B]);
+			break;
+		}
+	}
 }
 
 void setup()
