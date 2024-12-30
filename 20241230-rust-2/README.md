@@ -44,7 +44,7 @@ cargo add embedded-hal
 
 ## エラー
 
-### `error[E0463]: can't find crate for "core"`
+### ```error[E0463]: can't find crate for `core` ```
 
 ```
 error[E0463]: can't find crate for `core`
