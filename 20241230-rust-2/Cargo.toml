@@ -1,0 +1,16 @@
+[package]
+name = "test-ch32v003-rust-2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ch32-hal = { git = "https://github.com/ch32-rs/ch32-hal", version = "0.1.0", features = ["ch32v003f4p6"] }
+embedded-hal = "1.0.0"
+panic-halt = "1.0.0"
+qingke = "0.4.0"
+qingke-rt = "0.4.0"
+
+[profile.dev]
+strip = false   # symbols are not flashed to the microcontroller, so don't strip them.
+lto = true
+opt-level = "s" # Optimize for size.
