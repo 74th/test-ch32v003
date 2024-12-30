@@ -8,8 +8,8 @@ use panic_halt as _;
 
 #[qingke_rt::entry]
 fn main() -> ! {
+    hal::debug::SDIPrint::enable();
     let config = hal::Config::default();
-
     let peripherals = hal::init(config);
 
     let mut led = Output::new(peripherals.PD6, Level::Low, Default::default());
@@ -19,5 +19,6 @@ fn main() -> ! {
     loop {
         led.toggle();
         delay.delay_ms(1000);
+        hal::println!("toggle!");
     }
 }
