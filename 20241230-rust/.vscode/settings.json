@@ -1,0 +1,4 @@
+{
+    "rust-analyzer.cargo.target": "riscv32e-unknown-none-elf",
+    "rust-analyzer.checkOnSave": false
+}
