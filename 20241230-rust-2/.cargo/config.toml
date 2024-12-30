@@ -6,7 +6,6 @@ target = "riscv32ec-unknown-none-elf.json"
 # Use probe-rs for running the project and specify the linker script
 # runner = "probe-rs run --chip ch32v003"
 runner = "wlink -v flash --enable-sdi-print --watch-serial"
-
 rustflags = ["-C", "link-arg=-Tlink.x"]
 
 # Nightly Rust features for building a subset of the standard library
