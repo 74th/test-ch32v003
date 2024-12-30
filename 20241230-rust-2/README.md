@@ -2,11 +2,18 @@
 
 https://github.com/ch32-rs/ch32-hal
 
+マシンに一度だけ
+
+```sh
+rustup install nightly
+```
+
 ```sh
 cargo init --name test-ch2v003-rust-2
 
 # nightlyを使う（2024/12/30現在）
 rustup override set nightly
+rustup component add rust-src
 ```
 
 ```toml
