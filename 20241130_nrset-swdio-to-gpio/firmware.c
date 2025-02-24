@@ -12,7 +12,7 @@
 #define TEST_PIN3 GPIOv_from_PORT_PIN(GPIO_port_C, 7)
 
 #define ENABLE_NRST_TO_GPIO
-#define ENABLE_SWDIO_TO_GPIO
+// #define ENABLE_SWDIO_TO_GPIO
 
 // #define TEST_INPUT
 
