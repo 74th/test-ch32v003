@@ -6,13 +6,13 @@ SWDIOはINPUT/OUTPUTのどちらでも使える。ファームウェア中でセ
 
 ## NRSTをGPIOにする
 
-### 有効化: NRST(Pin4)をNRSTにする
+### 有効化: NRST(Pin4)をPD7(GPIO)にする
 
 ```
 minichlink -D
 ```
 
-### 無効化: NRST(Pin4)をPD7(GPIO)にする
+### 無効化: NRST(Pin4)をNRSTに戻す
 
 ```
 minichlink -d
