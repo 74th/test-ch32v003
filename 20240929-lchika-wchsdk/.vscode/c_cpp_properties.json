@@ -1,0 +1,56 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/nnyn/ghq/github.com/74th/test-ch32v003/20240929-lchika-wchsdk/include",
+                "/Users/nnyn/ghq/github.com/74th/test-ch32v003/20240929-lchika-wchsdk/src",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Core/ch32v00x",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Peripheral/ch32v00x/inc",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Peripheral/ch32v00x/src",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Startup",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/System/ch32v00x",
+                "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Debug/ch32v00x",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/nnyn/ghq/github.com/74th/test-ch32v003/20240929-lchika-wchsdk/include",
+                    "/Users/nnyn/ghq/github.com/74th/test-ch32v003/20240929-lchika-wchsdk/src",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Core/ch32v00x",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Peripheral/ch32v00x/inc",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Peripheral/ch32v00x/src",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Startup",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/System/ch32v00x",
+                    "/Users/nnyn/.platformio/packages/framework-wch-noneos-sdk/Debug/ch32v00x",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60115",
+                "CH32V003F4",
+                "CH32V00X",
+                "CH32V003",
+                "__PIO_CPP_SUPPORT__",
+                ""
+            ],
+            "cStandard": "gnu99",
+            "cppStandard": "gnu++17",
+            "compilerPath": "/Users/nnyn/.platformio/packages/toolchain-riscv/bin/riscv-none-embed-gcc",
+            "compilerArgs": [
+                "-msmall-data-limit=0",
+                "-msave-restore",
+                "-march=rv32ecxw",
+                "-mabi=ilp32e",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
