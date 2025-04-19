@@ -26,7 +26,6 @@ void init(void)
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {0};
     TIM_OCInitTypeDef TIM_OCInitStructure = {0};
-    TIM_BDTRInitTypeDef TIM_BDTRInitStructure = {0};
     DMA_InitTypeDef DMA_InitStructure = {0};
 
     // GPIOにクロック供給
