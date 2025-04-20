@@ -19,7 +19,7 @@
 					"ignoreFailures": true
 				}
 			],
-			"svdPath": "${workspaceFolder}/../../misc/CH32V003xx.svd", // extension 'Peripheral Viewer' by mcu-debug (cortex-debug)
+			"svdPath": "${workspaceFolder}/misc/CH32V003xx.svd", // extension 'Peripheral Viewer' by mcu-debug (cortex-debug)
 			"miDebuggerPath": "gdb-multiarch",
 			"miDebuggerServerAddress": "127.0.0.1:3333",
 		},
