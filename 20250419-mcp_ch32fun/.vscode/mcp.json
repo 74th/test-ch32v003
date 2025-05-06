@@ -1,7 +1,7 @@
 {
 	"servers": {
-		"mcp-server-time": {
-			"command": "/Users/nnyn/ghq/github.com/74th/ch32v003-mcp-server/ch32v003-mcp-server",
+		"guidebook": {
+			"command": "/Users/nnyn/ghq/github.com/74th/ch32v003-guidebook-mcpserver/ch32v003-guidebook-mcpserver",
 			"args": [],
 			"env": {}
 		}
